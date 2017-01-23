@@ -33,46 +33,42 @@ class Aeromap extends Component {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      markers: {
-        test: {
-          latlng: {latitude: LATITUDE, longitude: LONGITUDE},
-          title: 'Nicanor',
-          description: 'Precaucion: suele despegar por la cabecera equivocada'
-        }
-      }
+      markers: {}
     };
 
     this._sync = new Sync((id, plane) => this.onRemoteLocation(id, plane));
   }
 
   componentDidMount() {
-    let onPosition = (position) => {
-      console.log('my position', position);
-
-      const newRegion = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
-      };
-      this.onRegionChange(newRegion);
-      this._sync.sendState(position.coords);
-    };
-
     navigator.geolocation.getCurrentPosition(
-      onPosition,
+      (position) => this.onLocalPosition(position),
       (error) => Alert.alert('Error', error.message),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
-    this.watchID = navigator.geolocation.watchPosition(onPosition);
+
+    this.watchID = navigator.geolocation.watchPosition((position) => this.onLocalPosition(position));
   }
 
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
+    clearTimeout(this._timeout);
+  }
+
+  onLocalPosition(position) {
+    console.log('my position', position);
+
+    const newRegion = {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
+    };
+    this.onRegionChange(newRegion);
+    this._sync.sendState(position.coords);
   }
 
   onRegionChange(region) {
-    this.setState({ region });
+    this.setState({region});
   }
 
   onRemoteLocation(id, plane) {
