@@ -9,7 +9,8 @@
   "dependencies": {
     "react": "15.4.2",
     "react-native": "0.40.0",
-    "react-native-maps": "^0.12.4"
+    "react-native-maps": "^0.12.4",
+    "socket.io-client": "^1.7.2"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
