@@ -1,8 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
+// TODO follow installation instructions for iOS => https://github.com/airbnb/react-native-maps/blob/master/docs/installation.md
+
 
 import React, { Component } from 'react';
 import {
@@ -11,21 +8,16 @@ import {
   Text,
   View
 } from 'react-native';
+import Aeromap from './js/components/aeromap';
 
 export default class aerosync extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to React Native!
+          aerosync for iOS
         </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
+        <Aeromap />
       </View>
     );
   }
@@ -38,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
   },
-  welcome: {
+  text: {
     fontSize: 20,
     textAlign: 'center',
     margin: 10,
