@@ -13,7 +13,7 @@ export default class {
     });
 
     this._socket.on('state', (id, state) => {
-      onStateCallback(state);
+      onStateCallback(id, state);
     });
   }
 

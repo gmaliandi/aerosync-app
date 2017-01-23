@@ -33,20 +33,22 @@ class Aeromap extends Component {
         latitudeDelta: LATITUDE_DELTA,
         longitudeDelta: LONGITUDE_DELTA,
       },
-      markers: [{
-        latlng: {latitude: LATITUDE, longitude: LONGITUDE},
-        title: 'Nicanor',
-        description: 'Precaucion: suele despegar por la cabecera equivocada'
-      }]
+      markers: {
+        test: {
+          latlng: {latitude: LATITUDE, longitude: LONGITUDE},
+          title: 'Nicanor',
+          description: 'Precaucion: suele despegar por la cabecera equivocada'
+        }
+      }
     };
 
-    this._sync = new Sync((id, state) => this.updateState(id, state));
+    this._sync = new Sync((id, plane) => this.onRemoteLocation(id, plane));
   }
 
   componentDidMount() {
     let onPosition = (position) => {
       console.log('my position', position);
-      
+
       const newRegion = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
@@ -73,8 +75,19 @@ class Aeromap extends Component {
     this.setState({ region });
   }
 
-  updateState(id, state) {
-    console.log('getting state', id, state);
+  onRemoteLocation(id, plane) {
+    let marker = {
+      latlng: {
+        latitude: plane.latitude,
+        longitude: plane.longitude
+      },
+      title: id,
+      description: `Speed: ${plane.speed}, Heading: ${plane.heading}, Altitude: ${plane.altitude}, Accuracy: ${plane.accuracy}`
+    };
+
+    this.setState({
+      markers: {...this.state.markers, id: marker}
+    });
   }
 
   render() {
@@ -84,9 +97,9 @@ class Aeromap extends Component {
           style={styles.map}
           region={this.state.region}
           onRegionChange={() => this.onRegionChange()}>
-            {this.state.markers.map(marker => (
+            {Object.values(this.state.markers).map(marker => (
               <MapView.Marker
-                key={marker.latlng}
+                key={`${marker.latlng.latitude}${marker.latlng.longitude}`}
                 coordinate={marker.latlng}
                 title={marker.title}
                 description={marker.description}
