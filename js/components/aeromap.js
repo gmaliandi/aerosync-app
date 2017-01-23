@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
 let { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
+const LATITUDE = -34.61138844;
+const LONGITUDE = -58.42087009;
 
 const LATITUDE_DELTA = 0.01;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
@@ -45,13 +45,14 @@ class Aeromap extends Component {
       (error) => Alert.alert('Error', error.message),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
-
     this.watchID = navigator.geolocation.watchPosition((position) => this.onLocalPosition(position));
+
+    this._interval = setInterval(() => this.forceUpdate(), 1000);
   }
 
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
-    clearTimeout(this._timeout);
+    clearInterval(this._interval);
   }
 
   onLocalPosition(position) {
@@ -78,7 +79,11 @@ class Aeromap extends Component {
         longitude: plane.longitude
       },
       title: id,
-      description: `Speed: ${plane.speed}, Heading: ${plane.heading}, Altitude: ${plane.altitude}, Accuracy: ${plane.accuracy}`
+      speed: plane.speed,
+      heading: plane.heading,
+      altitude: plane.altitude,
+      accuracy: plane.accuracy,
+      timestamp: Date.now()
     };
 
     this.setState({
@@ -97,8 +102,8 @@ class Aeromap extends Component {
               <MapView.Marker
                 key={`${marker.latlng.latitude}${marker.latlng.longitude}`}
                 coordinate={marker.latlng}
-                title={marker.title}
-                description={marker.description}
+                title={`${marker.title} (${((Date.now() - marker.timestamp) / 1000).toFixed(0)}s)`}
+                description={`Speed: ${marker.speed}, Heading: ${marker.heading}, Altitude: ${marker.altitude}, Accuracy: ${marker.accuracy}`}
                 image={require('../../assets/plane.png')}
               />
             ))}
