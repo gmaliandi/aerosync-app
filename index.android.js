@@ -10,12 +10,7 @@ import Aeromap from './js/components/aeromap';
 export default class aerosync extends Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          aerosync for Android
-        </Text>
-        <Aeromap />
-      </View>
+      <Aeromap />
     );
   }
 }
