@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Dimensions, Alert} from 'react-native';
 import MapView from 'react-native-maps';
-import sync from '../services/syncService';
+import Sync from '../services/syncService';
 
 const styles = StyleSheet.create({
   container: {
@@ -39,10 +39,14 @@ class Aeromap extends Component {
         description: 'Precaucion: suele despegar por la cabecera equivocada'
       }]
     };
+
+    this._sync = new Sync((id, state) => this.updateState(id, state));
   }
 
   componentDidMount() {
     let onPosition = (position) => {
+      console.log('my position', position);
+      
       const newRegion = {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
@@ -50,7 +54,7 @@ class Aeromap extends Component {
         longitudeDelta: LONGITUDE_DELTA
       };
       this.onRegionChange(newRegion);
-      sync.sendState(position.coords);
+      this._sync.sendState(position.coords);
     };
 
     navigator.geolocation.getCurrentPosition(
@@ -59,8 +63,6 @@ class Aeromap extends Component {
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
     );
     this.watchID = navigator.geolocation.watchPosition(onPosition);
-
-    sync.onState((state) => this.updateState(state));
   }
 
   componentWillUnmount() {
@@ -71,8 +73,8 @@ class Aeromap extends Component {
     this.setState({ region });
   }
 
-  updateState(state) {
-    console.log('getting state', state);
+  updateState(id, state) {
+    console.log('getting state', id, state);
   }
 
   render() {
